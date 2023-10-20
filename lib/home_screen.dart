@@ -24,10 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    //fetchDivisions();
-    // fetchDistricts("10");
-    //fetchSubDistricts("76");
-    fetchArea("145");
+    fetchDivisions();
   }
 
   ///fetched division
@@ -46,14 +43,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///fetched district
-  Future<void> fetchDistricts(String divisionId) async {
+  Future<void> fetchDistricts(int divisionId) async {
     final response = await http.post(
       Uri.parse(
           'https://teestacourier.com/api/merchant/get-district-by-division'),
-      body: {"division_id": divisionId},
+      body: {
+        "division_id": divisionId.toString(),
+      },
     );
+
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)["data"];
+      final data = jsonDecode(response.body);
       log("District data: $data");
       setState(() {
         districts = data['data'];
@@ -67,13 +67,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///fetched thana
-  Future<void> fetchSubDistricts(String districtId) async {
+  Future<void> fetchSubDistricts(int districtId) async {
     final response = await http.post(
       Uri.parse('https://teestacourier.com/api/merchant/get-thana-by-district'),
       body: {
-        "district_id": districtId,
+        "district_id": districtId.toString(),
       },
     );
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       log("Thana data: $data");
@@ -87,11 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///fetched area
-  Future<void> fetchArea(String thanaId) async {
+  Future<void> fetchArea(int thanaId) async {
     final response = await http.post(
       Uri.parse('https://teestacourier.com/api/merchant/get-area-by-thana'),
       body: {
-        "thana_id": thanaId,
+        "thana_id": thanaId.toString(),
       },
     );
     if (response.statusCode == 200) {
@@ -112,6 +113,138 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("Dependent Dropdown"),
         centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ///Division
+            Text(
+              "Division",
+              style: TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              value: selectedDivision,
+              onChanged: (newValue) {
+                setState(() {
+                  selectedDivision = newValue;
+                  districts = [];
+                  selectedDistrict = null;
+                  subDistricts = [];
+                  selectedSubDistrict = null;
+                });
+                fetchDistricts(divisions.firstWhere(
+                    (division) => division['name'] == newValue)['id']);
+              },
+              items:
+                  divisions.map<DropdownMenuItem<String>>((dynamic division) {
+                return DropdownMenuItem<String>(
+                  value: division['name'],
+                  child: Text(
+                    division['name'],
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 8),
+
+            ///District
+            Text(
+              "District",
+              style: TextStyle(color: Colors.black),
+            ),
+
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                labelStyle: TextStyle(color: Colors.blue),
+              ),
+              value: selectedDistrict,
+              onChanged: (newValue) {
+                setState(() {
+                  selectedDistrict = newValue;
+                  subDistricts = [];
+                  selectedSubDistrict = null;
+                });
+                fetchSubDistricts(districts.firstWhere(
+                    (district) => district['name'] == newValue)['id']);
+              },
+              items:
+                  districts.map<DropdownMenuItem<String>>((dynamic district) {
+                return DropdownMenuItem<String>(
+                  value: district['name'],
+                  child: Text(
+                    district['name'],
+                  ),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 8),
+
+            ///Thana
+            Text(
+              "Thana",
+              style: TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 0,
+                  horizontal: 16,
+                ),
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              value: selectedSubDistrict,
+              onChanged: (newValue) {
+                setState(() {
+                  selectedSubDistrict = newValue;
+                });
+              },
+              items: subDistricts
+                  .map<DropdownMenuItem<String>>((dynamic subDistrict) {
+                return DropdownMenuItem<String>(
+                  value: subDistrict['name'],
+                  child: Text(subDistrict['name']),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
