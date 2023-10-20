@@ -20,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? selectedDistrict;
   List<dynamic> subDistricts = [];
   String? selectedSubDistrict;
+  List<dynamic> areaList = [];
+  String? selectedAreas;
 
   @override
   void initState() {
@@ -58,8 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         districts = data['data'];
         selectedDistrict = null;
-        subDistricts = [];
-        selectedSubDistrict = null;
+        // subDistricts = [];
+        // selectedSubDistrict = null;
+        // areaList = [];
+        // selectedAreas = null;
       });
     } else {
       log('Failed to fetch districts  ${response.statusCode}');
@@ -80,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
       log("Thana data: $data");
       setState(() {
         subDistricts = data['data'];
-        selectedSubDistrict = null;
+        // selectedSubDistrict = null;
+        // selectedAreas = null;
       });
     } else {
       log('Failed to fetch sub-districts. ${response.statusCode}');
@@ -99,8 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final data = jsonDecode(response.body);
       log("Area data: $data");
       setState(() {
-        subDistricts = data['data'];
-        selectedSubDistrict = null;
+        areaList = data['data'];
+        //selectedSubDistrict = null;
       });
     } else {
       log('Failed to fetch sub-districts. ${response.statusCode}');
@@ -147,6 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedDistrict = null;
                   subDistricts = [];
                   selectedSubDistrict = null;
+                  areaList = [];
+                  selectedAreas = null;
                 });
                 fetchDistricts(divisions.firstWhere(
                     (division) => division['name'] == newValue)['id']);
@@ -191,6 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedDistrict = newValue;
                   subDistricts = [];
                   selectedSubDistrict = null;
+                  areaList = [];
+                  selectedAreas = null;
                 });
                 fetchSubDistricts(districts.firstWhere(
                     (district) => district['name'] == newValue)['id']);
@@ -233,13 +242,55 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (newValue) {
                 setState(() {
                   selectedSubDistrict = newValue;
+                  areaList = [];
+                  selectedAreas = null;
                 });
+                fetchArea(subDistricts.firstWhere(
+                    (district) => district['name'] == newValue)['id']);
               },
               items: subDistricts
                   .map<DropdownMenuItem<String>>((dynamic subDistrict) {
                 return DropdownMenuItem<String>(
                   value: subDistrict['name'],
                   child: Text(subDistrict['name']),
+                );
+              }).toList(),
+            ),
+
+            SizedBox(height: 8),
+
+            ///Area
+            Text(
+              "Area",
+              style: TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 0,
+                  horizontal: 16,
+                ),
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              value: selectedAreas,
+              onChanged: (newValue) {
+                setState(() {
+                  selectedAreas = newValue;
+                });
+              },
+              items: areaList.map<DropdownMenuItem<String>>((dynamic areaData) {
+                return DropdownMenuItem<String>(
+                  value: areaData['name'],
+                  child: Text(areaData['name']),
                 );
               }).toList(),
             ),
