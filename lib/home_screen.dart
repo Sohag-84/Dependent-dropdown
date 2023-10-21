@@ -178,6 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
+                hintText: "Select district",
+                
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                 filled: true,
@@ -203,6 +205,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 fetchSubDistricts(districts.firstWhere(
                     (district) => district['name'] == newValue)['id']);
+                var districtId = districts
+                    .firstWhere((element) => element['name'] == newValue)['name'];
+                log("district Id: $districtId");
               },
               items:
                   districts.map<DropdownMenuItem<String>>((dynamic district) {
@@ -293,6 +298,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(areaData['name']),
                 );
               }).toList(),
+            ),
+
+            SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                log("Division: $selectedDivision");
+                log("District: $selectedDistrict");
+                log("Thana: $selectedSubDistrict");
+                log("Area: ${selectedAreas ?? ""}");
+              },
+              child: Text("Clicked"),
             ),
           ],
         ),
