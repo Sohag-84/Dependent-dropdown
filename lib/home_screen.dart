@@ -159,6 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              itemHeight: null,
+              isExpanded: true,
               decoration: InputDecoration(
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -211,6 +213,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             DropdownButtonFormField<String>(
+              itemHeight: null,
+              isExpanded: true,
               decoration: InputDecoration(
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -262,6 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              itemHeight: null,
+              isExpanded: true,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
                   vertical: 0,
@@ -308,6 +314,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              itemHeight: null,
+              isExpanded: true,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
                   vertical: 0,
