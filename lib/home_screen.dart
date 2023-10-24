@@ -26,10 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Fetch divisions first
     fetchDivisions();
   }
 
-  ///fetched division
   Future<void> fetchDivisions() async {
     final response = await http.post(
         Uri.parse('https://teestacourier.com/api/merchant/get-divisions'));
@@ -44,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  ///fetched district
   Future<void> fetchDistricts(int divisionId) async {
     final response = await http.post(
       Uri.parse(
@@ -59,11 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
       log("District data: $data");
       setState(() {
         districts = data['data'];
-        selectedDistrict = null;
-        // subDistricts = [];
-        // selectedSubDistrict = null;
-        // areaList = [];
-        // selectedAreas = null;
       });
     } else {
       log('Failed to fetch districts  ${response.statusCode}');
@@ -84,8 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
       log("Thana data: $data");
       setState(() {
         subDistricts = data['data'];
-        // selectedSubDistrict = null;
-        // selectedAreas = null;
       });
     } else {
       log('Failed to fetch sub-districts. ${response.statusCode}');
@@ -105,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
       log("Area data: $data");
       setState(() {
         areaList = data['data'];
-        //selectedSubDistrict = null;
       });
     } else {
       log('Failed to fetch sub-districts. ${response.statusCode}');
@@ -157,6 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 fetchDistricts(divisions.firstWhere(
                     (division) => division['name'] == newValue)['id']);
+                var divisionId = divisions
+                    .firstWhere((element) => element['name'] == newValue)['id'];
+                log("Division Id: $divisionId");
               },
               items:
                   divisions.map<DropdownMenuItem<String>>((dynamic division) {
@@ -178,8 +172,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                hintText: "Select district",
-                
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                 filled: true,
@@ -206,8 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 fetchSubDistricts(districts.firstWhere(
                     (district) => district['name'] == newValue)['id']);
                 var districtId = districts
-                    .firstWhere((element) => element['name'] == newValue)['name'];
-                log("district Id: $districtId");
+                    .firstWhere((element) => element['name'] == newValue)['id'];
+                log("District Id: $districtId");
               },
               items:
                   districts.map<DropdownMenuItem<String>>((dynamic district) {
@@ -306,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 log("Division: $selectedDivision");
                 log("District: $selectedDistrict");
                 log("Thana: $selectedSubDistrict");
-                log("Area: ${selectedAreas ?? ""}");
+                log("Area: ${selectedAreas}");
               },
               child: Text("Clicked"),
             ),
