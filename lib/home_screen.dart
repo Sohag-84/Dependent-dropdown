@@ -22,12 +22,49 @@ class _HomeScreenState extends State<HomeScreen> {
   String? selectedSubDistrict;
   List<dynamic> areaList = [];
   String? selectedAreas;
+  dynamic divisionId = 1;
+  dynamic districtId = 76;
+  dynamic thanaId = 16;
+  dynamic areaId = 534;
 
   @override
   void initState() {
     super.initState();
-    // Fetch divisions first
-    fetchDivisions();
+    fetchDivisions().then((_) {
+      if (divisionId != null) {
+        setState(() {
+          selectedDivision = divisions
+              .firstWhere((division) => division['id'] == divisionId)['name'];
+          fetchDistricts(divisionId);
+
+          ///fetched district name
+          if (districtId != null) {
+            fetchDistricts(divisionId).then((value) {
+              selectedDistrict = districts
+                  .firstWhere((element) => element['id'] == districtId)['name'];
+            });
+            fetchSubDistricts(districtId);
+          }
+
+          ///fetched thana name
+          if (thanaId != null) {
+            fetchSubDistricts(districtId).then((value) {
+              selectedSubDistrict = subDistricts
+                  .firstWhere((element) => element['id'] == thanaId)['name'];
+            });
+            fetchArea(thanaId);
+          }
+
+          ///fetched area name
+          if (areaId != null) {
+            fetchArea(thanaId).then((value) {
+              selectedAreas = areaList
+                  .firstWhere((element) => element['id'] == areaId)['name'];
+            });
+          }
+        });
+      }
+    });
   }
 
   Future<void> fetchDivisions() async {
@@ -145,10 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedSubDistrict = null;
                   areaList = [];
                   selectedAreas = null;
+                  districtId = null;
+                  thanaId = null;
+                  areaId = null;
                 });
                 fetchDistricts(divisions.firstWhere(
                     (division) => division['name'] == newValue)['id']);
-                var divisionId = divisions
+                divisionId = divisions
                     .firstWhere((element) => element['name'] == newValue)['id'];
                 log("Division Id: $divisionId");
               },
@@ -194,11 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedSubDistrict = null;
                   areaList = [];
                   selectedAreas = null;
+                  thanaId = null;
+                  areaId = null;
                 });
                 fetchSubDistricts(districts.firstWhere(
                     (district) => district['name'] == newValue)['id']);
-                var districtId = districts
-                    .firstWhere((element) => element['name'] == newValue)['id'];
+                districtId = districts.firstWhere(
+                    (district) => district['name'] == newValue)['id'];
                 log("District Id: $districtId");
               },
               items:
@@ -241,9 +283,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   selectedSubDistrict = newValue;
                   areaList = [];
                   selectedAreas = null;
+                  areaId = null;
                 });
                 fetchArea(subDistricts.firstWhere(
                     (district) => district['name'] == newValue)['id']);
+                thanaId = subDistricts
+                    .firstWhere((item) => item['name'] == newValue)['id'];
               },
               items: subDistricts
                   .map<DropdownMenuItem<String>>((dynamic subDistrict) {
@@ -282,6 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (newValue) {
                 setState(() {
                   selectedAreas = newValue;
+                  areaId = areaList
+                      .firstWhere((area) => area['name'] == newValue)['id'];
                 });
               },
               items: areaList.map<DropdownMenuItem<String>>((dynamic areaData) {
@@ -298,7 +345,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 log("Division: $selectedDivision");
                 log("District: $selectedDistrict");
                 log("Thana: $selectedSubDistrict");
-                log("Area: ${selectedAreas}");
+                log("Area: $selectedAreas");
+                log("----------- Area ID ------------");
+                log("Division id: $divisionId");
+                log("District id: $districtId");
+                log("Thana id: $thanaId");
+                log("Area id: $areaId");
               },
               child: Text("Clicked"),
             ),
